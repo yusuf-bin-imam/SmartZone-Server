@@ -46,9 +46,16 @@ async function run() {
         category: id,
       };
       console.log(id);
-      z;
+
       const options = await optionsCollections.find(query).toArray();
       res.send(options);
+    });
+
+    app.post("/bookings", async (req, res) => {
+      const booking = req.body;
+      console.log(booking);
+      const result = await bookingCollections.insertOne(booking);
+      res.send(result);
     });
   } finally {
   }
