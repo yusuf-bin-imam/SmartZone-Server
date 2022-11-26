@@ -22,6 +22,8 @@ async function run() {
   try {
     const optionsCollections = client.db("smartZone").collection("products");
 
+    const bookingCollections = client.db("smartZone").collection("bookings");
+
     const categoryCollections = client
       .db("smartZone")
       .collection("productCategory");
@@ -44,6 +46,7 @@ async function run() {
         category: id,
       };
       console.log(id);
+      z;
       const options = await optionsCollections.find(query).toArray();
       res.send(options);
     });
