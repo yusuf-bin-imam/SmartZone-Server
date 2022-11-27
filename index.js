@@ -1,14 +1,20 @@
 const express = require("express");
 const cors = require("cors");
 const { MongoClient, ServerApiVersion } = require("mongodb");
+const { JsonWebTokenError } = require("jsonwebtoken");
 const app = express();
 require("dotenv").config();
 
 const port = process.env.PORT || 5000;
+
+// JsonWebToken
+const jwt = require("jsonwebtoken");
+
 // middleware
 app.use(cors());
 app.use(express.json());
 
+// mongoDB
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.petbnp7.mongodb.net/?retryWrites=true&w=majority`;
 // console.log(uri);
 
