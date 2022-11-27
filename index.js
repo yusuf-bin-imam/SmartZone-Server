@@ -20,10 +20,15 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
+    // optionsCollections
     const optionsCollections = client.db("smartZone").collection("products");
 
+    // bookingCollections
     const bookingCollections = client.db("smartZone").collection("bookings");
 
+    const usersCollections = client.db("smartZone").collection("users");
+
+    // categoryCollections
     const categoryCollections = client
       .db("smartZone")
       .collection("productCategory");
@@ -53,6 +58,7 @@ async function run() {
 
     app.get("/bookings", async (req, res) => {
       const email = req.query.email;
+      console.log(email);
       const query = { email: email };
       const bookings = await bookingCollections.find(query).toArray();
       res.send(bookings);
