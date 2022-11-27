@@ -26,6 +26,7 @@ async function run() {
     // bookingCollections
     const bookingCollections = client.db("smartZone").collection("bookings");
 
+    // usersCollections
     const usersCollections = client.db("smartZone").collection("users");
 
     // categoryCollections
@@ -68,6 +69,13 @@ async function run() {
       const booking = req.body;
       console.log(booking);
       const result = await bookingCollections.insertOne(booking);
+      res.send(result);
+    });
+
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      console.log(user);
+      const result = await usersCollections.insertOne(user);
       res.send(result);
     });
   } finally {
