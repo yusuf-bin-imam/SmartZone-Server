@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const { JsonWebTokenError } = require("jsonwebtoken");
 const app = express();
 require("dotenv").config();
@@ -23,6 +23,23 @@ const client = new MongoClient(uri, {
   useUnifiedTopology: true,
   serverApi: ServerApiVersion.v1,
 });
+
+function verifyJWT(req, res, next) {
+  // console.log("token inside the verifyJWT", req.headers.authorization);
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).send("unauthorized access");
+  }
+
+  const token = authHeader.split(" ")[1];
+  jwt.verify(token, process.env.ACCESS_TOKEN, function (err, decoded) {
+    if (err) {
+      return res.status(403).send({ message: "forbidden access" });
+    }
+    req.decoded = decoded;
+    next();
+  });
+}
 
 async function run() {
   try {
@@ -63,9 +80,15 @@ async function run() {
       res.send(options);
     });
 
-    app.get("/bookings", async (req, res) => {
+    app.get("/bookings", verifyJWT, async (req, res) => {
       const email = req.query.email;
       console.log(email);
+      const decodedEmail = req.decoded.email;
+
+      if (email !== decodedEmail) {
+        return res.status(403).send({ message: "forbidden access" });
+      }
+
       const query = { email: email };
       const bookings = await bookingCollections.find(query).toArray();
       res.send(bookings);
@@ -92,10 +115,55 @@ async function run() {
       res.status(403).send({ accessToken: "" });
     });
 
+    // buyer
+    app.emit("/buyer", async (req, res) => {
+      const query = { role: "buyer" };
+      const users = await usersCollections.find(query).toArray();
+      res.send(users);
+    });
+
+    // seller
+    app.get("/seller", async (req, res) => {
+      const query = {};
+      const users = await usersCollections.find(query).toArray();
+      res.send(users);
+    });
+
+    app.get("/users", async (req, res) => {
+      const query = {};
+      const users = await usersCollections.find(query).toArray();
+      res.send(users);
+    });
+
     app.post("/users", async (req, res) => {
       const user = req.body;
       console.log(user);
       const result = await usersCollections.insertOne(user);
+      res.send(result);
+    });
+
+    app.put("/users/admin/:id", verifyJWT, async (req, res) => {
+      const decodedEmail = req.decoded.email;
+      const query = { email: decodedEmail };
+      const user = await usersCollections.findOne(query);
+      if (user?.role !== "admin") {
+        return res.status(403).send({ message: "forbidden access" });
+      }
+      const id = req.params.id;
+      const filter = {
+        _id: ObjectId(id),
+      };
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          role: "admin",
+        },
+      };
+      const result = await usersCollections.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
       res.send(result);
     });
   } finally {
