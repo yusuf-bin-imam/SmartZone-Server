@@ -63,6 +63,16 @@ async function run() {
       res.send(options);
     });
 
+    // brandcategory
+    app.get("/brandCategory", async (req, res) => {
+      const query = {};
+      const result = await categoryCollections
+        .find(query)
+        .project({ category: 1 })
+        .toArray();
+      res.send(result);
+    });
+
     app.get("/products", async (req, res) => {
       const query = {};
       const options = await optionsCollections.find(query).toArray();
