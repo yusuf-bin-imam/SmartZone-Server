@@ -220,8 +220,19 @@ async function run() {
       const result = await productCollections.deleteOne(filter);
       res.send(result);
     });
-    // delete product from my products
+
+    // delete seller
     app.delete("/seller/:id", verifyJWT, verifyAdmin, async (req, res) => {
+      const id = req.params.id;
+      const filter = {
+        _id: ObjectId(id),
+      };
+      const result = await usersCollections.deleteOne(filter);
+      res.send(result);
+    });
+
+    // delete buyer
+    app.delete("/buyer/:id", verifyJWT, verifyAdmin, async (req, res) => {
       const id = req.params.id;
       const filter = {
         _id: ObjectId(id),
