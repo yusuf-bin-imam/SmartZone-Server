@@ -55,6 +55,11 @@ async function run() {
     // productCollections
     const productCollections = client.db("smartZone").collection("products");
 
+    // categoryCollections
+    const categoryCollections = client
+      .db("smartZone")
+      .collection("productCategory");
+
     // verify admin
     const verifyAdmin = async (req, res, next) => {
       // console.log("inside verifyAdmin", req.decoded.email);
@@ -66,11 +71,6 @@ async function run() {
       }
       next();
     };
-
-    // categoryCollections
-    const categoryCollections = client
-      .db("smartZone")
-      .collection("productCategory");
 
     app.get("/categories", async (req, res) => {
       const query = {};
@@ -171,11 +171,20 @@ async function run() {
       res.send(result);
     });
 
+    // verify admin
     app.get("/users/admin/:email", async (req, res) => {
       const email = req.params.email;
       const query = { email };
       const user = await usersCollections.findOne(query);
       res.send({ isAdmin: user?.role === "admin" });
+    });
+
+    // verify seller
+    app.get("/users/seller/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email };
+      const user = await usersCollections.findOne(query);
+      res.send({ isSeller: user?.role === "seller" });
     });
 
     app.put("/users/admin/:id", verifyJWT, verifyAdmin, async (req, res) => {
@@ -186,7 +195,7 @@ async function run() {
       const options = { upsert: true };
       const updateDoc = {
         $set: {
-          role: "admin",
+          status: "verified",
         },
       };
       const result = await usersCollections.updateOne(
