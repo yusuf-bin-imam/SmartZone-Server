@@ -1,9 +1,11 @@
 const express = require("express");
 const cors = require("cors");
-const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
-const { JsonWebTokenError } = require("jsonwebtoken");
 const app = express();
 require("dotenv").config();
+
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+
+const { JsonWebTokenError } = require("jsonwebtoken");
 
 const port = process.env.PORT || 5000;
 
@@ -73,9 +75,15 @@ async function run() {
     };
 
     app.get("/categories", async (req, res) => {
-      const query = {};
-      const options = await categoryCollections.find(query).toArray();
-      res.send(options);
+      // console.log("hellow ");
+      try {
+        const query = {};
+        const options = await categoryCollections.find(query).toArray();
+        res.send(options);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send(error);
+      }
     });
 
     // brandCategory
