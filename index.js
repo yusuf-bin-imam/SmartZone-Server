@@ -129,8 +129,8 @@ async function run() {
       res.send(bookings);
     });
 
-    app.get("/bookings/email", async (req, res) => {
-      const email = req.query.email;
+    app.get("/bookings/:email", async (req, res) => {
+      const email = req.params.email;
       console.log("console hocche ", email);
       const result = await bookingCollections.find({ email: email }).toArray();
       console.log(result);
@@ -180,7 +180,7 @@ async function run() {
       const query = {
         brand: brand,
       };
-      console.log(brand);
+      // console.log(brand);
 
       const BrandProducts = await optionsCollections.find(query).toArray();
       // console.log(Brandproducts);
@@ -195,9 +195,16 @@ async function run() {
       res.send(options);
     });
 
-    app.get("/products/email", async (req, res) => {
-      const email = req.query.email;
-      console.log("email ta hocche", email);
+    app.get("/myProducts/:email", async (req, res) => {
+      const email = req.params.email;
+
+      const query = {
+        email: email,
+      };
+      const myProducts = await productCollections.find(query).toArray();
+      // console.log(myProducts);
+
+      res.send(myProducts);
     });
 
     // delete product from my products
