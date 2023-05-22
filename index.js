@@ -156,13 +156,14 @@ async function run() {
 
         return res.send({ accessToken: token });
       }
-      // console.log(query);
+      console.log(query);
       res.status(403).send({ accessToken: "" });
     });
     /* ------------------------------ products api ------------------------------ */
     app.get("/products", async (req, res) => {
       const query = {};
       const products = await productCollections.find(query).toArray();
+      console.log(products);
       res.send(products);
     });
 
