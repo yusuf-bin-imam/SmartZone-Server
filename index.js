@@ -163,7 +163,7 @@ async function run() {
     app.get("/products", async (req, res) => {
       const query = {};
       const products = await productCollections.find(query).toArray();
-      console.log(products);
+
       res.send(products);
     });
 
