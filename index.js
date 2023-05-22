@@ -133,7 +133,7 @@ async function run() {
       const email = req.params.email;
       console.log("console hocche ", email);
       const result = await bookingCollections.find({ email: email }).toArray();
-      console.log(result);
+      // console.log(result);
       res.send(result);
     });
 
