@@ -54,6 +54,9 @@ async function run() {
     // usersCollections
     const usersCollections = client.db("smartZone").collection("users");
 
+    // feedback collection
+    const feedbackCollection = client.db("smartZone").collection("feedbacks");
+
     // productCollections
     const productCollections = client.db("smartZone").collection("products");
 
@@ -294,7 +297,20 @@ async function run() {
       const user = await usersCollections.findOne(query);
       res.send({ isSeller: user?.role === "seller" });
     });
+    // feedback
+    app.post("/feedbacks", async (req, res) => {
+      const feedback = req.body;
+      const result = await feedbackCollection.insertOne(feedback);
+      console.log(result);
+      res.send(result);
+    });
 
+    app.get("/feedbacks", async (req, res) => {
+      const query = {};
+      const result = await feedbackCollection.find(query).toArray();
+      console.log(result);
+      res.send(result);
+    });
     // api for make admin
     app.put("/users/admin/:id", verifyJWT, async (req, res) => {
       const id = req.params.id;
